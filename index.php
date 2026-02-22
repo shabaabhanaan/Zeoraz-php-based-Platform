@@ -79,33 +79,85 @@ try {
 </div>
 
 <script>
-sendBtn.addEventListener('click', async () => {
+const chatBtn = document.getElementById('chatbot-button');
+const chatPopup = document.getElementById('chat-popup');
+const closeChat = document.getElementById('close-chat');
+const sendBtn = document.getElementById('send-chat');
+const chatInput = document.getElementById('chat-input');
+const chatMessages = document.getElementById('chat-messages');
+
+let welcomeSent = false;
+chatBtn.addEventListener('click', (e) => {
+    e.preventDefault();
+    chatPopup.classList.toggle('hidden');
+    if (!chatPopup.classList.contains('hidden')) {
+        chatInput.focus();
+        if (!welcomeSent) {
+            addMessage('Hello! I am Zeoraz AI. How can I help you today?', 'bot');
+            welcomeSent = true;
+        }
+    }
+});
+
+
+closeChat.addEventListener('click', () => {
+    chatPopup.classList.add('hidden');
+});
+
+sendBtn.addEventListener('click', sendMessage);
+chatInput.addEventListener('keypress', (e) => {
+    if (e.key === 'Enter') sendMessage();
+});
+
+async function sendMessage() {
     const msg = chatInput.value.trim();
     if (!msg) return;
 
     addMessage(msg, 'user');
     chatInput.value = '';
 
-    const response = await fetch('chat_ai.php', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ message: msg })
-    });
+    // Add typing indicator
+    const typingId = addMessage('...', 'bot', true);
 
-    const data = await response.json();
-    addMessage(data.reply, 'bot');
-});
+    try {
+        const response = await fetch('api/chat_ai.php', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ message: msg })
+        });
 
-function addMessage(text, sender) {
+        const data = await response.json();
+        removeMessage(typingId);
+        addMessage(data.reply || 'Sorry, I keep having trouble connecting.', 'bot');
+    } catch (error) {
+        removeMessage(typingId);
+        addMessage('Sorry, something went wrong. Please try again.', 'bot');
+    }
+}
+
+function addMessage(text, sender, isTyping = false) {
+    const id = 'msg-' + Date.now();
     const div = document.createElement('div');
+    div.id = id;
     div.className = sender === 'user'
-        ? 'bg-cyan-500 text-black p-2 rounded-lg self-end max-w-xs'
-        : 'bg-gray-700 text-white p-2 rounded-lg self-start max-w-xs';
+        ? 'bg-cyan-500 text-black p-3 rounded-2xl rounded-tr-none self-end max-w-[80%] shadow-sm'
+        : 'bg-white/5 text-white p-3 rounded-2xl rounded-tl-none self-start max-w-[80%] border border-white/5 shadow-sm';
+
+    if (isTyping) {
+        div.classList.add('animate-pulse');
+    }
 
     div.textContent = text;
     chatMessages.appendChild(div);
     chatMessages.scrollTop = chatMessages.scrollHeight;
+    return id;
+}
+
+function removeMessage(id) {
+    const el = document.getElementById(id);
+    if (el) el.remove();
 }
 </script>
+
 
 <?php require_once 'includes/footer.php'; ?>
