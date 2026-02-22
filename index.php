@@ -58,63 +58,54 @@ try {
     </svg>
 </a>
 
-<div id="chat-popup" class="fixed bottom-24 right-6 w-80 bg-white rounded-xl shadow-lg hidden flex-col overflow-hidden z-50">
-    <div class="bg-cyan-500 text-white px-4 py-2 flex justify-between items-center">
-        <span>Chat with us</span>
-        <button id="close-chat" class="text-white">&times;</button>
+<div id="chat-popup" class="fixed bottom-24 right-6 w-96 bg-gray-900 rounded-2xl shadow-2xl hidden flex-col overflow-hidden z-50 border border-white/10">
+
+    <div class="bg-cyan-500 text-black px-4 py-3 flex justify-between items-center font-bold">
+        Zeoraz AI Assistant
+        <button id="close-chat">&times;</button>
     </div>
-    <div id="chat-messages" class="p-4 h-64 overflow-y-auto flex flex-col gap-2"></div>
-    <div class="p-2 border-t flex gap-2">
-        <input type="text" id="chat-input" class="flex-1 border rounded px-2 py-1" placeholder="Type a message..." />
-        <button id="send-chat" class="bg-cyan-500 text-white px-3 py-1 rounded">Send</button>
+
+    <div id="chat-messages" class="p-4 h-80 overflow-y-auto space-y-3 text-sm"></div>
+
+    <div class="p-3 border-t border-white/10 flex gap-2">
+        <input type="text" id="chat-input"
+            class="flex-1 bg-gray-800 text-white rounded-lg px-3 py-2 focus:outline-none"
+            placeholder="Ask something..." />
+        <button id="send-chat"
+            class="bg-cyan-500 text-black px-4 rounded-lg font-semibold">
+            Send
+        </button>
     </div>
 </div>
 
 <script>
-const chatbotBtn = document.getElementById('chatbot-button');
-const chatPopup = document.getElementById('chat-popup');
-const closeBtn = document.getElementById('close-chat');
-const sendBtn = document.getElementById('send-chat');
-const chatInput = document.getElementById('chat-input');
-const chatMessages = document.getElementById('chat-messages');
-
-// Open/close chat popup
-chatbotBtn.addEventListener('click', () => {
-    chatPopup.classList.toggle('hidden');
-});
-
-closeBtn.addEventListener('click', () => {
-    chatPopup.classList.add('hidden');
-});
-
-// Send message
-sendBtn.addEventListener('click', () => {
+sendBtn.addEventListener('click', async () => {
     const msg = chatInput.value.trim();
-    if(msg){
-        // Display message in chat
-        const msgDiv = document.createElement('div');
-        msgDiv.className = 'bg-cyan-100 text-black p-2 rounded self-end';
-        msgDiv.textContent = msg;
-        chatMessages.appendChild(msgDiv);
+    if (!msg) return;
 
-        // Scroll to bottom
-        chatMessages.scrollTop = chatMessages.scrollHeight;
+    addMessage(msg, 'user');
+    chatInput.value = '';
 
-        chatInput.value = '';
+    const response = await fetch('chat_ai.php', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ message: msg })
+    });
 
-        // OPTIONAL: Send to backend via AJAX
-        fetch('chat_send.php', {
-            method: 'POST',
-            headers: {'Content-Type': 'application/json'},
-            body: JSON.stringify({ message: msg })
-        });
-    }
+    const data = await response.json();
+    addMessage(data.reply, 'bot');
 });
 
-// Press Enter to send
-chatInput.addEventListener('keypress', (e) => {
-    if(e.key === 'Enter') sendBtn.click();
-});
+function addMessage(text, sender) {
+    const div = document.createElement('div');
+    div.className = sender === 'user'
+        ? 'bg-cyan-500 text-black p-2 rounded-lg self-end max-w-xs'
+        : 'bg-gray-700 text-white p-2 rounded-lg self-start max-w-xs';
+
+    div.textContent = text;
+    chatMessages.appendChild(div);
+    chatMessages.scrollTop = chatMessages.scrollHeight;
+}
 </script>
 
 <?php require_once 'includes/footer.php'; ?>
