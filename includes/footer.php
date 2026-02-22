@@ -10,6 +10,20 @@
             <a href="#" class="hover:text-white transition">Privacy</a>
             <a href="#" class="hover:text-white transition">Terms</a>
         </div>
+        <div class="text-center md:text-right text-white/50 text-sm space-y-2">
+            <p>
+                📧 
+                <a href="mailto:info.zeoraz@gmail.com" class="hover:text-white transition">
+                    info.zeoraz@gmail.com
+                </a>
+            </p>
+            <p>
+                📞 
+                <a href="tel:+94771234567" class="hover:text-white transition">
+                    +94 77 123 4567
+                </a>
+            </p>
+        </div>
         <div class="text-white/30 text-sm">
             &copy; <?php echo date('Y'); ?> Zeoraz. All rights reserved.
         </div>
