@@ -1,0 +1,20 @@
+# Composer
+/vendor/
+composer.phar
+*.lock
+
+# Environment/Secrets
+.env*
+google-config.php
+
+# IDEs and OS
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+
+# XAMPP / Misc
+/node_modules/
+/.next/
+*.tsbuildinfo
+next-env.d.ts
