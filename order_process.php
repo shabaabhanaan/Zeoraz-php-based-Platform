@@ -53,6 +53,60 @@ try {
     $pdo->commit();
     $_SESSION['cart'] = [];
     
+    // --- EMAIL NOTIFICATIONS ---
+    try {
+        // 5. Notify Buyer
+        $buyerEmail = $_SESSION['user_email'] ?? '';
+        if (!$buyerEmail) {
+            $uStmt = $pdo->prepare("SELECT email FROM users WHERE id = ?");
+            $uStmt->execute([$userId]);
+            if ($u = $uStmt->fetch()) $buyerEmail = $u['email'];
+        }
+
+        if ($buyerEmail) {
+            $subject = "Order Confirmed - #" . substr($orderId, 0, 8);
+            $body = "<h2>Thank you for your order!</h2>
+                     <p>Your order <strong>#$orderId</strong> has been placed successfully.</p>
+                     <p>Total Amount: <strong>$" . number_format($totalAmount, 2) . "</strong></p>
+                     <p>We'll notify you once your items are shipped.</p>";
+            sendMail($buyerEmail, $subject, $body);
+        }
+
+        // 6. Notify Sellers and Check Low Stock
+        $sellerData = [];
+        foreach ($products as $p) {
+            if (!isset($sellerData[$p['sellerId']])) {
+                $sStmt = $pdo->prepare("SELECT name, email FROM users WHERE id = ?");
+                $sStmt->execute([$p['sellerId']]);
+                $sellerData[$p['sellerId']] = $sStmt->fetch();
+            }
+            
+            $seller = $sellerData[$p['sellerId']];
+            if ($seller) {
+                // New Order Notification
+                $sSubject = "New Order Received - Zeoraz";
+                $sBody = "<h3>Hello " . htmlspecialchars($seller['name']) . ",</h3>
+                          <p>You have received a new order for <strong>" . htmlspecialchars($p['name']) . "</strong>.</p>
+                          <p>Quantity: " . $cart[$p['id']] . "</p>
+                          <p>Please check your dashboard for details.</p>";
+                sendMail($seller['email'], $sSubject, $sBody);
+
+                // Low Stock Alert
+                $newStock = $p['stock'] - $cart[$p['id']];
+                if ($newStock < 5) {
+                    $lsSubject = "Low Stock Alert: " . htmlspecialchars($p['name']);
+                    $lsBody = "<h3>Stock Warning</h3>
+                               <p>Your product <strong>" . htmlspecialchars($p['name']) . "</strong> is running low on stock.</p>
+                               <p>Current stock: <strong>$newStock</strong></p>
+                               <p>Please restock soon to avoid missing out on sales.</p>";
+                    sendMail($seller['email'], $lsSubject, $lsBody);
+                }
+            }
+        }
+    } catch (Exception $mailEx) {
+        // Mailer fail should not block the order success page
+    }
+
     // Redirect to success page
     $_SESSION['last_order_id'] = $orderId;
     redirect('order_success.php');

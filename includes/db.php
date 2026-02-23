@@ -1,5 +1,5 @@
-<?php
 // includes/db.php
+require_once 'config.php';
 $host = '127.0.0.1'; // Use literal IP for better compatibility with ports
 $dbname = 'multi_vendor_market';
 $user = 'root';

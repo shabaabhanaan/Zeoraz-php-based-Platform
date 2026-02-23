@@ -155,9 +155,20 @@ require_once 'includes/header.php';
                             <p class="font-bold"><?php echo htmlspecialchars($order['customerName']); ?></p>
                             <p class="text-white/40 text-xs"><?php echo date('M d, H:i', strtotime($order['createdAt'])); ?></p>
                         </div>
-                        <div class="text-right">
+                        <div class="text-right flex flex-col items-end gap-2">
                             <p class="text-cyan-400 font-mono font-bold">$<?php echo number_format($order['totalAmount'], 2); ?></p>
-                            <p class="text-[10px] uppercase font-black <?php echo $order['status'] === 'COMPLETED' ? 'text-green-500' : 'text-amber-500'; ?>"><?php echo $order['status']; ?></p>
+                            <?php if($role === 'ADMIN' || $role === 'SELLER'): ?>
+                                <select onchange="updateOrderStatus('<?php echo $order['id']; ?>', this.value)" 
+                                    class="bg-white/5 border border-white/10 rounded-lg px-2 py-1 text-[10px] uppercase font-black focus:outline-none focus:border-cyan-500 transition">
+                                    <option value="PENDING" <?php echo $order['status'] === 'PENDING' ? 'selected' : ''; ?>>Pending</option>
+                                    <option value="PROCESSING" <?php echo $order['status'] === 'PROCESSING' ? 'selected' : ''; ?>>Processing</option>
+                                    <option value="SHIPPED" <?php echo $order['status'] === 'SHIPPED' ? 'selected' : ''; ?>>Shipped</option>
+                                    <option value="COMPLETED" <?php echo $order['status'] === 'COMPLETED' ? 'selected' : ''; ?>>Completed</option>
+                                    <option value="CANCELLED" <?php echo $order['status'] === 'CANCELLED' ? 'selected' : ''; ?>>Cancelled</option>
+                                </select>
+                            <?php else: ?>
+                                <p class="text-[10px] uppercase font-black <?php echo $order['status'] === 'COMPLETED' ? 'text-green-500' : 'text-amber-500'; ?> transition-colors duration-500" id="status-<?php echo $order['id']; ?>"><?php echo $order['status']; ?></p>
+                            <?php endif; ?>
                         </div>
                     </div>
                 <?php endforeach; ?>
@@ -183,5 +194,29 @@ require_once 'includes/header.php';
     </div>
 </div>
 
+
+<script>
+async function updateOrderStatus(orderId, status) {
+    const formData = new FormData();
+    formData.append('order_id', orderId);
+    formData.append('status', status);
+
+    try {
+        const res = await fetch('api/update_order_status.php', {
+            method: 'POST',
+            body: formData
+        });
+        const data = await res.json();
+        if (data.success) {
+            // Optional: Add a toast notification here
+            console.log('Status updated and email sent');
+        } else {
+            alert('Failed to update status: ' + data.message);
+        }
+    } catch (e) {
+        console.error('Error updating status', e);
+    }
+}
+</script>
 
 <?php require_once 'includes/footer.php'; ?>
