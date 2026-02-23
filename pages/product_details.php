@@ -1,7 +1,7 @@
 <?php
 // product_details.php
-require_once 'includes/db.php';
-require_once 'includes/utils.php';
+require_once '../core/db.php';
+require_once '../core/utils.php';
 
 $id = $_GET['id'] ?? '';
 
@@ -21,7 +21,7 @@ try {
     die("Error: " . $e->getMessage());
 }
 
-require_once 'includes/header.php';
+require_once '../includes/header.php';
 ?>
 
 <div class="grid grid-cols-1 lg:grid-cols-2 gap-12">
@@ -94,4 +94,4 @@ require_once 'includes/header.php';
     </div>
 </div>
 
-<?php require_once 'includes/footer.php'; ?>
+<?php require_once '../includes/footer.php'; ?>

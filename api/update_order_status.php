@@ -1,7 +1,7 @@
 <?php
 // api/update_order_status.php
-require_once '../includes/db.php';
-require_once '../includes/utils.php';
+require_once '../core/db.php';
+require_once '../core/utils.php';
 
 if (!is_logged_in() || (get_user_role() !== 'SELLER' && get_user_role() !== 'ADMIN')) {
     echo json_encode(['success' => false, 'message' => 'Unauthorized']);

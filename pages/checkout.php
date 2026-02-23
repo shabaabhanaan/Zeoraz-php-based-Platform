@@ -1,7 +1,7 @@
 <?php
 // checkout.php - Complete Order Flow
-require_once 'includes/db.php';
-require_once 'includes/utils.php';
+require_once '../core/db.php';
+require_once '../core/utils.php';
 
 if (!is_logged_in()) {
     redirect('auth/login.php');
@@ -9,7 +9,7 @@ if (!is_logged_in()) {
 
 $cart = $_SESSION['cart'] ?? [];
 if (empty($cart)) {
-    redirect('cart.php');
+    redirect(BASE_URL . 'pages/cart.php');
 }
 
 $products = [];
@@ -24,7 +24,7 @@ foreach ($products as $p) {
     $total += $p['price'] * $cart[$p['id']];
 }
 
-require_once 'includes/header.php';
+require_once '../includes/header.php';
 ?>
 
 <div class="max-w-6xl mx-auto">
@@ -33,7 +33,7 @@ require_once 'includes/header.php';
         <div class="flex-1 space-y-8">
             <h1 class="text-3xl font-black">Billing <span class="text-cyan-400">Information</span></h1>
             
-            <form action="order_process.php" method="POST" class="space-y-6">
+            <form action="<?php echo BASE_URL; ?>api/order_process.php" method="POST" class="space-y-6">
                 <div class="glass border border-white/10 p-8 rounded-3xl space-y-6">
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div class="space-y-2">
@@ -120,4 +120,4 @@ require_once 'includes/header.php';
     </div>
 </div>
 
-<?php require_once 'includes/footer.php'; ?>
+<?php require_once '../includes/footer.php'; ?>

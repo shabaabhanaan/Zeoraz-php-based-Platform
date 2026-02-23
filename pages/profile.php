@@ -1,7 +1,7 @@
 <?php
 // profile.php
-require_once 'includes/db.php';
-require_once 'includes/utils.php';
+require_once '../core/db.php';
+require_once '../core/utils.php';
 
 if (!is_logged_in()) {
     redirect('auth/login.php');
@@ -52,7 +52,7 @@ $stmt = $pdo->prepare("SELECT * FROM users WHERE id = ?");
 $stmt->execute([$userId]);
 $user = $stmt->fetch();
 
-require_once 'includes/header.php';
+require_once '../includes/header.php';
 ?>
 
 <div class="max-w-xl mx-auto">
@@ -109,10 +109,10 @@ require_once 'includes/header.php';
         </form>
 
         <div class="pt-6 border-t border-white/5 flex justify-between items-center text-sm">
-            <a href="dashboard.php" class="text-white/40 hover:text-white transition">← Back to Dashboard</a>
-            <a href="auth/forgot-password.php" class="text-cyan-400 hover:underline">Reset Password?</a>
+            <a href="<?php echo BASE_URL; ?>seller/dashboard.php" class="text-white/40 hover:text-white transition">← Back to Dashboard</a>
+            <a href="<?php echo BASE_URL; ?>auth/forgot-password.php" class="text-cyan-400 hover:underline">Reset Password?</a>
         </div>
     </div>
 </div>
 
-<?php require_once 'includes/footer.php'; ?>
+<?php require_once '../includes/footer.php'; ?>

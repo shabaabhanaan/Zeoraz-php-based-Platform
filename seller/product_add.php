@@ -1,10 +1,10 @@
 <?php
 // product_add.php
-require_once 'includes/db.php';
-require_once 'includes/utils.php';
+require_once '../core/db.php';
+require_once '../core/utils.php';
 
 if (!is_logged_in() || get_user_role() !== 'SELLER') {
-    redirect('auth/login.php');
+    redirect(BASE_URL . 'auth/login.php');
 }
 
 $error = '';
@@ -32,11 +32,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 }
 
-require_once 'includes/header.php';
+require_once '../includes/header.php';
 ?>
 
 <div class="max-w-2xl mx-auto">
-    <a href="dashboard.php" class="text-white/50 hover:text-white mb-6 flex items-center gap-2 transition">
+    <a href="<?php echo BASE_URL; ?>seller/dashboard.php" class="text-white/50 hover:text-white mb-6 flex items-center gap-2 transition">
         <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>
         Back to Dashboard
     </a>
@@ -96,4 +96,4 @@ require_once 'includes/header.php';
     </div>
 </div>
 
-<?php require_once 'includes/footer.php'; ?>
+<?php require_once '../includes/footer.php'; ?>

@@ -1,8 +1,7 @@
 <?php
 
-session_start();
-require_once '../includes/db.php';
-require_once '../includes/utils.php';
+require_once '../core/db.php';
+require_once '../core/utils.php';
 require_once '../google-config.php';
 
 // Create Google login URL
@@ -12,9 +11,9 @@ $google_login_url = $client->createAuthUrl();
 if (is_logged_in()) {
     // Redirect based on role
     if ($_SESSION['user_role'] === 'seller') {
-        redirect('../seller/dashboard.php');
+        redirect(BASE_URL . 'seller/dashboard.php');
     } else {
-        redirect('../index.php'); // customer homepage
+        redirect(BASE_URL . 'index.php'); // customer homepage
     }
 }
 
@@ -40,9 +39,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
                 // Redirect based on role
                 if ($user['role'] === 'seller') {
-                    redirect('../seller/dashboard.php');
+                    redirect(BASE_URL . 'seller/dashboard.php');
                 } else {
-                    redirect('../index.php'); // customer homepage
+                    redirect(BASE_URL . 'index.php'); // customer homepage
                 }
 
             } else {

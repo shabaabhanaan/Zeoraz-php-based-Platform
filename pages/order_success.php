@@ -1,12 +1,12 @@
 <?php
 // order_success.php - Invoice View
-require_once 'includes/db.php';
-require_once 'includes/utils.php';
+require_once '../core/db.php';
+require_once '../core/utils.php';
 
-if (!is_logged_in()) redirect('auth/login.php');
+if (!is_logged_in()) redirect(BASE_URL . 'auth/login.php');
 
 $orderId = $_SESSION['last_order_id'] ?? null;
-if (!$orderId) redirect('index.php');
+if (!$orderId) redirect(BASE_URL . 'index.php');
 
 // Fetch Order Details
 $stmt = $pdo->prepare("SELECT o.*, u.name as customerName, u.email as customerEmail FROM orders o JOIN users u ON o.userId = u.id WHERE o.id = ?");
@@ -18,7 +18,7 @@ $stmt = $pdo->prepare("SELECT oi.*, p.name FROM order_items oi JOIN products p O
 $stmt->execute([$orderId]);
 $items = $stmt->fetchAll();
 
-require_once 'includes/header.php';
+require_once '../includes/header.php';
 ?>
 
 <div class="max-w-3xl mx-auto space-y-12">
@@ -79,9 +79,9 @@ require_once 'includes/header.php';
     </div>
 
     <div class="flex justify-center gap-6">
-        <a href="index.php" class="bg-white/5 border border-white/10 px-8 py-3 rounded-2xl font-bold hover:bg-white/10 transition">Continue Shopping</a>
+        <a href="<?php echo BASE_URL; ?>index.php" class="bg-white/5 border border-white/10 px-8 py-3 rounded-2xl font-bold hover:bg-white/10 transition">Continue Shopping</a>
         <button onclick="window.print()" class="bg-cyan-500 text-black px-8 py-3 rounded-2xl font-bold hover:bg-cyan-400 transition shadow-lg shadow-cyan-500/20">Print Invoice</button>
     </div>
 </div>
 
-<?php require_once 'includes/footer.php'; ?>
+<?php require_once '../includes/footer.php'; ?>

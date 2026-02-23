@@ -1,14 +1,14 @@
 <?php
 // auth/reset-password.php
-require_once '../includes/db.php';
-require_once '../includes/utils.php';
+require_once '../core/db.php';
+require_once '../core/utils.php';
 
 $error = '';
 $success = '';
 $token = $_GET['token'] ?? '';
 
 if (!$token) {
-    redirect('login.php');
+    redirect(BASE_URL . 'auth/login.php');
 }
 
 // Verify token
@@ -17,7 +17,7 @@ $stmt->execute([$token]);
 $user = $stmt->fetch();
 
 if (!$user) {
-    die("Invalid or expired token. <a href='forgot-password.php'>Request a new link</a>");
+    die("Invalid or expired token. <a href='" . BASE_URL . "auth/forgot-password.php'>Request a new link</a>");
 }
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -71,7 +71,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <div class="bg-green-500/20 text-green-400 p-4 rounded-xl border border-green-500/30 text-sm">
                 <?php echo htmlspecialchars($success); ?>
                 <div class="mt-4">
-                    <a href="login.php" class="inline-block bg-cyan-500 text-black px-6 py-2 rounded-lg font-bold">Login Now</a>
+                    <a href="<?php echo BASE_URL; ?>auth/login.php" class="inline-block bg-cyan-500 text-black px-6 py-2 rounded-lg font-bold">Login Now</a>
                 </div>
             </div>
         <?php else: ?>

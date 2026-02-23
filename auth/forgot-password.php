@@ -1,7 +1,7 @@
 <?php
 // auth/forgot-password.php
-require_once '../includes/db.php';
-require_once '../includes/utils.php';
+require_once '../core/db.php';
+require_once '../core/utils.php';
 
 $error = '';
 $success = '';
@@ -23,7 +23,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $stmt = $pdo->prepare("UPDATE users SET reset_token = ?, reset_expires = ? WHERE id = ?");
             $stmt->execute([$token, $expires, $user['id']]);
 
-            $resetLink = "http://" . $_SERVER['HTTP_HOST'] . dirname($_SERVER['PHP_SELF']) . "/reset-password.php?token=$token";
+            $resetLink = BASE_URL . "auth/reset-password.php?token=$token";
             
             $subject = "Password Reset Request - Zeoraz";
             $body = "<h3>Hello " . htmlspecialchars($user['name']) . ",</h3>

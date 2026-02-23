@@ -1,8 +1,8 @@
 <?php
 // terms.php
-require_once 'includes/db.php';
-require_once 'includes/utils.php';
-require_once 'includes/header.php';
+require_once '../core/db.php';
+require_once '../core/utils.php';
+require_once '../includes/header.php';
 ?>
 
 <div class="max-w-4xl mx-auto py-12 px-6">
@@ -62,4 +62,4 @@ require_once 'includes/header.php';
     </div>
 </div>
 
-<?php require_once 'includes/footer.php'; ?>
+<?php require_once '../includes/footer.php'; ?>

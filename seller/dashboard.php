@@ -1,10 +1,10 @@
 <?php
 // dashboard.php
-require_once 'includes/db.php';
-require_once 'includes/utils.php';
+require_once '../core/db.php';
+require_once '../core/utils.php';
 
 if (!is_logged_in()) {
-    redirect('auth/login.php');
+    redirect(BASE_URL . 'auth/login.php');
 }
 
 $role = get_user_role();
@@ -23,7 +23,7 @@ $recentOrdersStmt = $pdo->prepare("SELECT o.*, u.name as customerName FROM order
 $recentOrdersStmt->execute();
 $recentOrders = $recentOrdersStmt->fetchAll();
 
-require_once 'includes/header.php';
+require_once '../includes/header.php';
 ?>
 
 <div class="mb-12">
@@ -35,7 +35,7 @@ require_once 'includes/header.php';
         
         <div class="flex gap-4">
             <?php if($role === 'SELLER' || $role === 'ADMIN'): ?>
-                <a href="product_manager.php" class="bg-cyan-500 text-black px-6 py-3 rounded-2xl font-bold hover:bg-cyan-400 transition flex items-center gap-2 shadow-lg shadow-cyan-500/20">
+                <a href="<?php echo BASE_URL; ?>seller/product_add.php" class="bg-cyan-500 text-black px-6 py-3 rounded-2xl font-bold hover:bg-cyan-400 transition flex items-center gap-2 shadow-lg shadow-cyan-500/20">
                     <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="M12 5v14"/></svg>
                     New Product
                 </a>
@@ -71,7 +71,7 @@ require_once 'includes/header.php';
             <div class="glass border border-white/10 rounded-3xl overflow-hidden shadow-2xl">
                 <div class="px-6 py-5 border-b border-white/5 flex justify-between items-center bg-white/5">
                     <h2 class="text-lg font-bold">Manage Inventory</h2>
-                    <span class="text-xs text-white/40 font-mono">Total: <?php echo count($stats['products']); ?> items</span>
+                    <span class="text-xs text-white/40 font-mono">Total: <?php echo $stats['products']; ?> items</span>
                 </div>
                 <div class="overflow-x-auto">
                     <table class="w-full text-left whitespace-nowrap">
@@ -116,10 +116,10 @@ require_once 'includes/header.php';
                                         </span>
                                     </td>
                                     <td class="px-6 py-4 text-right space-x-3">
-                                        <a href="product_manager.php?id=<?php echo $p['id']; ?>" class="text-white/20 hover:text-white transition inline-block">
+                                        <a href="<?php echo BASE_URL; ?>seller/product_manager.php?id=<?php echo $p['id']; ?>" class="text-white/20 hover:text-white transition inline-block">
                                             <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"/></svg>
                                         </a>
-                                        <a href="product_delete.php?id=<?php echo $p['id']; ?>" onclick="return confirm('Delete this product?')" class="text-white/10 hover:text-red-500 transition inline-block">
+                                        <a href="<?php echo BASE_URL; ?>seller/product_delete.php?id=<?php echo $p['id']; ?>" onclick="return confirm('Delete this product?')" class="text-white/10 hover:text-red-500 transition inline-block">
                                             <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/></svg>
                                         </a>
                                     </td>
@@ -189,7 +189,7 @@ require_once 'includes/header.php';
                     <p class="text-xs text-white/40 capitalize"><?php echo $role; ?></p>
                 </div>
             </div>
-            <a href="profile.php" class="block w-full text-center bg-white/5 border border-white/10 py-3 rounded-xl text-sm font-bold hover:bg-white/10 transition">Manage Settings</a>
+            <a href="<?php echo BASE_URL; ?>pages/profile.php" class="block w-full text-center bg-white/5 border border-white/10 py-3 rounded-xl text-sm font-bold hover:bg-white/10 transition">Manage Settings</a>
         </div>
     </div>
 </div>
@@ -202,7 +202,7 @@ async function updateOrderStatus(orderId, status) {
     formData.append('status', status);
 
     try {
-        const res = await fetch('api/update_order_status.php', {
+        const res = await fetch('<?php echo BASE_URL; ?>api/update_order_status.php', {
             method: 'POST',
             body: formData
         });
@@ -219,4 +219,4 @@ async function updateOrderStatus(orderId, status) {
 }
 </script>
 
-<?php require_once 'includes/footer.php'; ?>
+<?php require_once '../includes/footer.php'; ?>

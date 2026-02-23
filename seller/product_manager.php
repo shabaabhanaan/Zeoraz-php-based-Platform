@@ -1,10 +1,10 @@
 <?php
 // product_manager.php - Unified Add/Edit
-require_once 'includes/db.php';
-require_once 'includes/utils.php';
+require_once '../core/db.php';
+require_once '../core/utils.php';
 
 if (!is_logged_in() || (get_user_role() !== 'SELLER' && get_user_role() !== 'ADMIN')) {
-    redirect('auth/login.php');
+    redirect(BASE_URL . 'auth/login.php');
 }
 
 $error = '';
@@ -19,7 +19,7 @@ if ($productId) {
     
     // Check ownership if not admin
     if ($product && get_user_role() !== 'ADMIN' && $product['sellerId'] !== $_SESSION['user_id']) {
-        redirect('dashboard.php');
+        redirect(BASE_URL . 'seller/dashboard.php');
     }
 }
 
@@ -36,7 +36,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     // Image Upload Logic
     if (isset($_FILES['image']) && $_FILES['image']['error'] === UPLOAD_ERR_OK) {
-        $uploadDir = 'uploads/products/';
+        $uploadDir = __DIR__ . '/../uploads/products/';
         if (!is_dir($uploadDir)) mkdir($uploadDir, 0777, true);
         
         $ext = pathinfo($_FILES['image']['name'], PATHINFO_EXTENSION);
@@ -44,7 +44,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $uploadFile = $uploadDir . $fileName;
         
         if (move_uploaded_file($_FILES['image']['tmp_name'], $uploadFile)) {
-            $imageUrl = $uploadFile;
+            $imageUrl = 'uploads/products/' . $fileName;
         } else {
             $error = "Failed to upload image.";
         }
@@ -81,12 +81,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 }
 
-require_once 'includes/header.php';
+require_once '../includes/header.php';
 ?>
 
 <div class="max-w-4xl mx-auto">
     <div class="flex items-center justify-between mb-8">
-        <a href="dashboard.php" class="text-white/50 hover:text-white flex items-center gap-2 transition">
+        <a href="<?php echo BASE_URL; ?>seller/dashboard.php" class="text-white/50 hover:text-white flex items-center gap-2 transition">
             <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>
             Back to Dashboard
         </a>
@@ -159,7 +159,7 @@ require_once 'includes/header.php';
                         <div class="relative group">
                             <div class="aspect-square bg-white/5 border-2 border-dashed border-white/10 rounded-2xl flex items-center justify-center overflow-hidden transition group-hover:border-cyan-500/50">
                                 <?php if($product && $product['image']): ?>
-                                    <img src="<?php echo htmlspecialchars($product['image']); ?>" class="w-full h-full object-cover">
+                                    <img src="<?php echo BASE_URL . htmlspecialchars($product['image']); ?>" class="w-full h-full object-cover">
                                 <?php else: ?>
                                     <div class="text-center space-y-2">
                                         <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="mx-auto text-white/20"><rect width="18" height="18" x="3" y="3" rx="2" ry="2"/><circle cx="9" cy="9" r="2"/><path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"/></svg>
@@ -186,4 +186,4 @@ require_once 'includes/header.php';
     </div>
 </div>
 
-<?php require_once 'includes/footer.php'; ?>
+<?php require_once '../includes/footer.php'; ?>

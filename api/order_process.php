@@ -1,14 +1,14 @@
 <?php
 // order_process.php - Transaction Logic
-require_once 'includes/db.php';
-require_once 'includes/utils.php';
+require_once '../core/db.php';
+require_once '../core/utils.php';
 
 if (!is_logged_in() || $_SERVER['REQUEST_METHOD'] !== 'POST') {
-    redirect('index.php');
+    redirect(BASE_URL . 'index.php');
 }
 
 $cart = $_SESSION['cart'] ?? [];
-if (empty($cart)) redirect('cart.php');
+if (empty($cart)) redirect(BASE_URL . 'pages/cart.php');
 
 $userId = $_SESSION['user_id'];
 $address = $_POST['address'] ?? '';
@@ -109,10 +109,10 @@ try {
 
     // Redirect to success page
     $_SESSION['last_order_id'] = $orderId;
-    redirect('order_success.php');
+    redirect(BASE_URL . 'pages/order_success.php');
 
 } catch (Exception $e) {
     $pdo->rollBack();
-    die("Order failed: " . $e->getMessage() . " <a href='cart.php'>Go back to cart</a>");
+    die("Order failed: " . $e->getMessage() . " <a href='" . BASE_URL . "pages/cart.php'>Go back to cart</a>");
 }
 ?>

@@ -1,5 +1,6 @@
+<?php
 // includes/utils.php
-require_once 'mailer.php';
+require_once __DIR__ . '/mailer.php';
 
 function generate_id() {
     return bin2hex(random_bytes(16)); // Simple 32-char hex ID

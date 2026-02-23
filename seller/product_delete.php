@@ -1,7 +1,7 @@
 <?php
 // product_delete.php
-require_once 'includes/db.php';
-require_once 'includes/utils.php';
+require_once '../core/db.php';
+require_once '../core/utils.php';
 
 if (!is_logged_in() || (get_user_role() !== 'SELLER' && get_user_role() !== 'ADMIN')) {
     die("Unauthorized");
@@ -22,8 +22,11 @@ if ($id) {
             }
 
             // Delete image file if exists
-            if ($product['image'] && file_exists($product['image'])) {
-                unlink($product['image']);
+            if ($product['image']) {
+                $fullPath = __DIR__ . '/../' . $product['image'];
+                if (file_exists($fullPath)) {
+                    unlink($fullPath);
+                }
             }
 
             // Delete database record
@@ -35,5 +38,5 @@ if ($id) {
     }
 }
 
-redirect('dashboard.php');
+redirect(BASE_URL . 'seller/dashboard.php');
 ?>

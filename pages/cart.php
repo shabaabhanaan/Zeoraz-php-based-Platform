@@ -1,7 +1,7 @@
 <?php
 // cart.php - Upgraded Shopping Cart
-require_once 'includes/db.php';
-require_once 'includes/header.php';
+require_once '../core/db.php';
+require_once '../includes/header.php';
 
 $cart = $_SESSION['cart'] ?? [];
 $products = [];
@@ -25,7 +25,7 @@ if (!empty($cart)) {
                 <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-white/20"><circle cx="8" cy="21" r="1"/><circle cx="19" cy="21" r="1"/><path d="M2.05 2.05h2l2.66 12.42a2 2 0 0 0 2 1.58h9.78a2 2 0 0 0 1.95-1.57l1.65-7.43H5.12"/></svg>
             </div>
             <p class="text-white/40 text-xl italic">Your cart is feeling a bit lonely...</p>
-            <a href="index.php" class="inline-block bg-white text-black px-8 py-3 rounded-2xl font-bold hover:scale-105 transition">Start Shopping</a>
+            <a href="<?php echo BASE_URL; ?>index.php" class="inline-block bg-white text-black px-8 py-3 rounded-2xl font-bold hover:scale-105 transition">Start Shopping</a>
         </div>
     <?php else: ?>
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
@@ -90,14 +90,14 @@ if (!empty($cart)) {
                         </div>
                     </div>
 
-                    <a href="checkout.php" class="block w-full text-center bg-cyan-500 text-black font-black py-4 rounded-2xl hover:bg-cyan-400 transition mt-8 shadow-lg shadow-cyan-500/20 active:scale-[0.98]">
+                    <a href="<?php echo BASE_URL; ?>pages/checkout.php" class="block w-full text-center bg-cyan-500 text-black font-black py-4 rounded-2xl hover:bg-cyan-400 transition mt-8 shadow-lg shadow-cyan-500/20 active:scale-[0.98]">
                         Proceed to Checkout
                     </a>
                     
                     <p class="text-[10px] text-white/30 text-center mt-4 uppercase tracking-widest font-bold">Secure Checkout Powered by Zeoraz</p>
                 </div>
 
-                <a href="index.php" class="block w-full text-center py-4 text-white/40 hover:text-white transition font-bold text-sm">
+                <a href="<?php echo BASE_URL; ?>index.php" class="block w-full text-center py-4 text-white/40 hover:text-white transition font-bold text-sm">
                     Continue Shopping
                 </a>
             </div>
@@ -117,7 +117,7 @@ async function updateQty(id, delta) {
     formData.append('quantity', newQty);
 
     try {
-        const res = await fetch('cart_handler.php', { method: 'POST', body: formData });
+        const res = await fetch('<?php echo BASE_URL; ?>api/cart_handler.php', { method: 'POST', body: formData });
         const data = await res.json();
         if (data.success) {
             location.reload(); // Simple way to refresh totals
@@ -133,7 +133,7 @@ async function removeItem(id) {
     formData.append('product_id', id);
 
     try {
-        const res = await fetch('cart_handler.php', { method: 'POST', body: formData });
+        const res = await fetch('<?php echo BASE_URL; ?>api/cart_handler.php', { method: 'POST', body: formData });
         const data = await res.json();
         if (data.success) {
             location.reload();
@@ -142,4 +142,4 @@ async function removeItem(id) {
 }
 </script>
 
-<?php require_once 'includes/footer.php'; ?>
+<?php require_once '../includes/footer.php'; ?>
