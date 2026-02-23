@@ -26,31 +26,71 @@ try {
 
 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
     <?php foreach ($products as $product): ?>
-        <div class="glass border border-white/10 rounded-2xl p-4 group hover:border-cyan-500/50 transition">
-            <div class="aspect-square bg-white/5 rounded-xl mb-4 overflow-hidden">
+        <div class="glass border border-white/10 rounded-3xl p-4 group hover:border-cyan-500/50 transition duration-500 flex flex-col">
+            <a href="product_details.php?id=<?php echo $product['id']; ?>" class="block relative aspect-square bg-white/5 rounded-2xl mb-4 overflow-hidden">
                 <?php if($product['image']): ?>
-                    <img src="<?php echo htmlspecialchars($product['image']); ?>" class="w-full h-full object-cover group-hover:scale-110 transition duration-500">
+                    <img src="<?php echo htmlspecialchars($product['image']); ?>" class="w-full h-full object-cover group-hover:scale-110 transition duration-700">
                 <?php else: ?>
-                    <div class="w-full h-full flex items-center justify-center text-white/10">No Image</div>
+                    <div class="w-full h-full flex items-center justify-center text-white/5 font-black text-4xl uppercase tracking-tighter">Zeoraz</div>
                 <?php endif; ?>
+                <div class="absolute top-3 right-3 px-3 py-1 bg-black/60 backdrop-blur-md rounded-full text-[10px] font-black uppercase tracking-widest border border-white/10">
+                    <?php echo htmlspecialchars($product['category'] ?? 'General'); ?>
+                </div>
+            </a>
+            
+            <div class="flex-1 space-y-1">
+                <h3 class="font-bold text-lg leading-tight truncate"><?php echo htmlspecialchars($product['name']); ?></h3>
+                <p class="text-white/40 text-xs line-clamp-2 italic h-8"><?php echo htmlspecialchars($product['description']); ?></p>
             </div>
-            <h3 class="font-bold text-lg"><?php echo htmlspecialchars($product['name']); ?></h3>
-            <p class="text-white/50 text-sm line-clamp-2 mt-1"><?php echo htmlspecialchars($product['description']); ?></p>
-            <div class="mt-4 flex justify-between items-center">
-                <span class="text-cyan-400 font-black text-xl">$<?php echo number_format($product['price'], 2); ?></span>
-                <button class="bg-cyan-500 hover:bg-cyan-400 p-2 rounded-lg text-black transition">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="8" cy="21" r="1"/><circle cx="19" cy="21" r="1"/><path d="M2.05 2.05h2l2.66 12.42a2 2 0 0 0 2 1.58h9.78a2 2 0 0 0 1.95-1.57l1.65-7.43H5.12"/></svg>
+
+            <div class="mt-6 flex justify-between items-center bg-white/5 p-2 rounded-2xl border border-white/5 group-hover:border-cyan-500/20 transition">
+                <span class="pl-2 font-black text-xl text-cyan-400 font-mono">$<?php echo number_format($product['price'], 2); ?></span>
+                <button onclick="addToCart('<?php echo $product['id']; ?>', this)" 
+                    class="bg-cyan-500 hover:bg-cyan-400 p-3 rounded-xl text-black transition shadow-lg shadow-cyan-500/10 active:scale-90">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="8" cy="21" r="1"/><circle cx="19" cy="21" r="1"/><path d="M2.05 2.05h2l2.66 12.42a2 2 0 0 0 2 1.58h9.78a2 2 0 0 0 1.95-1.57l1.65-7.43H5.12"/></svg>
                 </button>
             </div>
         </div>
     <?php endforeach; ?>
     
     <?php if(empty($products)): ?>
-        <div class="col-span-full text-center py-20 border border-dashed border-white/10 rounded-3xl">
-            <p class="text-white/40 italic">No products available yet. Be the first to list one!</p>
+        <div class="col-span-full text-center py-20 border-2 border-dashed border-white/5 rounded-[40px] bg-white/[0.01]">
+            <p class="text-white/20 text-xl font-bold italic tracking-tighter">The marketplace is quiet... be the first to sell something.</p>
         </div>
     <?php endif; ?>
 </div>
+
+<script>
+async function addToCart(id, btn) {
+    const originalContent = btn.innerHTML;
+    btn.innerHTML = '<svg class="animate-spin h-5 w-5 text-black" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>';
+    btn.disabled = true;
+
+    const formData = new FormData();
+    formData.append('action', 'add');
+    formData.append('product_id', id);
+    formData.append('quantity', 1);
+
+    try {
+        const res = await fetch('cart_handler.php', { method: 'POST', body: formData });
+        const data = await res.json();
+        
+        if (data.success) {
+            btn.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="black" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>';
+            btn.classList.replace('bg-cyan-500', 'bg-emerald-500');
+            setTimeout(() => {
+                btn.innerHTML = originalContent;
+                btn.classList.replace('bg-emerald-500', 'bg-cyan-500');
+                btn.disabled = false;
+            }, 1500);
+        }
+    } catch (e) {
+        btn.innerHTML = originalContent;
+        btn.disabled = false;
+    }
+}
+</script>
+
 
 <a href="#" id="chatbot-button" class="fixed bottom-6 right-6 w-16 h-16 bg-cyan-500 rounded-full flex items-center justify-center shadow-lg hover:bg-cyan-400 transition z-50">
     <svg xmlns="http://www.w3.org/2000/svg" class="w-8 h-8 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">

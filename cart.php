@@ -1,10 +1,10 @@
 <?php
-// cart.php
+// cart.php - Upgraded Shopping Cart
 require_once 'includes/db.php';
-require_once 'includes/utils.php';
+require_once 'includes/header.php';
 
 $cart = $_SESSION['cart'] ?? [];
-$cartProducts = [];
+$products = [];
 $total = 0;
 
 if (!empty($cart)) {
@@ -12,87 +12,134 @@ if (!empty($cart)) {
     $placeholders = str_repeat('?,', count($ids) - 1) . '?';
     $stmt = $pdo->prepare("SELECT * FROM products WHERE id IN ($placeholders)");
     $stmt->execute($ids);
-    $cartProducts = $stmt->fetchAll();
-    
-    foreach ($cartProducts as &$p) {
-        $p['quantity'] = $cart[$p['id']];
-        $p['subtotal'] = $p['price'] * $p['quantity'];
-        $total += $p['subtotal'];
-    }
+    $products = $stmt->fetchAll();
 }
-
-require_once 'includes/header.php';
 ?>
 
 <div class="max-w-4xl mx-auto">
-    <h1 class="text-4xl font-black mb-12">Your <span class="text-cyan-400">Shopping Cart</span></h1>
+    <h1 class="text-4xl font-black mb-12">Your <span class="text-cyan-400">Cart</span></h1>
 
-    <?php if(empty($cartProducts)): ?>
-        <div class="glass border border-white/10 rounded-3xl p-20 text-center space-y-6">
-            <div class="flex justify-center">
-                <svg xmlns="http://www.w3.org/2000/svg" width="80" height="80" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="text-white/10"><circle cx="8" cy="21" r="1"/><circle cx="19" cy="21" r="1"/><path d="M2.05 2.05h2l2.66 12.42a2 2 0 0 0 2 1.58h9.78a2 2 0 0 0 1.95-1.57l1.65-7.43H5.12"/></svg>
+    <?php if (empty($products)): ?>
+        <div class="glass border border-dashed border-white/10 rounded-3xl p-20 text-center space-y-6">
+            <div class="w-20 h-20 bg-white/5 rounded-full flex items-center justify-center mx-auto">
+                <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-white/20"><circle cx="8" cy="21" r="1"/><circle cx="19" cy="21" r="1"/><path d="M2.05 2.05h2l2.66 12.42a2 2 0 0 0 2 1.58h9.78a2 2 0 0 0 1.95-1.57l1.65-7.43H5.12"/></svg>
             </div>
-            <p class="text-white/40 text-xl font-medium italic">Your cart is as empty as space.</p>
-            <a href="index.php" class="inline-block bg-white text-black px-8 py-3 rounded-full font-bold hover:scale-105 transition">Start Shopping</a>
+            <p class="text-white/40 text-xl italic">Your cart is feeling a bit lonely...</p>
+            <a href="index.php" class="inline-block bg-white text-black px-8 py-3 rounded-2xl font-bold hover:scale-105 transition">Start Shopping</a>
         </div>
     <?php else: ?>
-        <div class="space-y-6">
-            <div class="glass border border-white/10 rounded-3xl overflow-hidden">
-                <table class="w-full text-left">
-                    <thead class="bg-white/5 border-b border-white/10">
-                        <tr>
-                            <th class="px-8 py-4 font-bold text-white/50 text-sm italic uppercase tracking-widest">Item</th>
-                            <th class="px-8 py-4 font-bold text-white/50 text-sm italic uppercase tracking-widest">Quantity</th>
-                            <th class="px-8 py-4 font-bold text-white/50 text-sm italic uppercase tracking-widest text-right">Subtotal</th>
-                        </tr>
-                    </thead>
-                    <tbody class="divide-y divide-white/5">
-                        <?php foreach($cartProducts as $p): ?>
-                            <tr>
-                                <td class="px-8 py-6 flex items-center gap-6">
-                                    <div class="w-20 h-20 bg-white/5 rounded-2xl flex-shrink-0 overflow-hidden">
-                                        <?php if($p['image']): ?>
-                                            <img src="<?php echo htmlspecialchars($p['image']); ?>" class="w-full h-full object-cover">
-                                        <?php endif; ?>
-                                    </div>
-                                    <div>
-                                        <h3 class="font-bold text-lg"><?php echo htmlspecialchars($p['name']); ?></h3>
-                                        <p class="text-cyan-400 font-bold">$<?php echo number_format($p['price'], 2); ?></p>
-                                    </div>
-                                </td>
-                                <td class="px-8 py-6">
-                                    <div class="flex items-center gap-3">
-                                        <span class="text-xl font-black"><?php echo $p['quantity']; ?></span>
-                                        <a href="cart_remove.php?id=<?php echo $p['id']; ?>" class="text-red-500/50 hover:text-red-500 transition text-sm underline">Remove</a>
-                                    </div>
-                                </td>
-                                <td class="px-8 py-6 text-right font-black text-xl">
-                                    $<?php echo number_format($p['subtotal'], 2); ?>
-                                </td>
-                            </tr>
-                        <?php endforeach; ?>
-                    </tbody>
-                </table>
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            <!-- Cart Items -->
+            <div class="lg:col-span-2 space-y-4">
+                <?php foreach ($products as $p): 
+                    $qty = $cart[$p['id']];
+                    $subtotal = $p['price'] * $qty;
+                    $total += $subtotal;
+                ?>
+                    <div class="glass border border-white/10 p-4 rounded-3xl flex items-center gap-6 group hover:border-cyan-500/30 transition shadow-xl" id="cart-item-<?php echo $p['id']; ?>">
+                        <div class="w-24 h-24 bg-white/5 rounded-2xl border border-white/10 overflow-hidden flex-shrink-0">
+                            <?php if($p['image']): ?>
+                                <img src="<?php echo htmlspecialchars($p['image']); ?>" class="w-full h-full object-cover">
+                            <?php endif; ?>
+                        </div>
+                        
+                        <div class="flex-1 min-w-0">
+                            <h3 class="font-bold text-lg truncate"><?php echo htmlspecialchars($p['name']); ?></h3>
+                            <p class="text-white/40 text-sm mb-3"><?php echo htmlspecialchars($p['category']); ?></p>
+                            
+                            <div class="flex items-center gap-4">
+                                <div class="flex items-center bg-white/5 rounded-xl border border-white/10 px-2 py-1">
+                                    <button onclick="updateQty('<?php echo $p['id']; ?>', -1)" class="w-8 h-8 flex items-center justify-center hover:text-cyan-400 transition">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/></svg>
+                                    </button>
+                                    <span class="w-8 text-center font-mono font-bold" id="qty-<?php echo $p['id']; ?>"><?php echo $qty; ?></span>
+                                    <button onclick="updateQty('<?php echo $p['id']; ?>', 1)" class="w-8 h-8 flex items-center justify-center hover:text-cyan-400 transition">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="M12 5v14"/></svg>
+                                    </button>
+                                </div>
+                                <button onclick="removeItem('<?php echo $p['id']; ?>')" class="text-white/20 hover:text-red-500 transition">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/></svg>
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="text-right">
+                            <p class="text-xl font-black text-cyan-400 font-mono">$<?php echo number_format($subtotal, 2); ?></p>
+                        </div>
+                    </div>
+                <?php endforeach; ?>
             </div>
 
-            <div class="flex flex-col md:flex-row justify-between items-center gap-8 pt-8 outline-none">
-                <a href="index.php" class="text-white/40 hover:text-white transition flex items-center gap-2">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>
+            <!-- Summary -->
+            <div class="space-y-6">
+                <div class="glass border border-white/10 p-8 rounded-3xl sticky top-28 shadow-2xl bg-gradient-to-b from-white/[0.02] to-transparent">
+                    <h2 class="text-xl font-bold mb-6">Order Summary</h2>
+                    
+                    <div class="space-y-4 text-white/60 text-sm">
+                        <div class="flex justify-between">
+                            <span>Subtotal</span>
+                            <span class="font-mono">$<?php echo number_format($total, 2); ?></span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span>Shipping</span>
+                            <span class="text-green-400 font-bold">FREE</span>
+                        </div>
+                        <div class="border-t border-white/10 pt-4 flex justify-between text-white text-lg font-black">
+                            <span>Total</span>
+                            <span class="text-cyan-400 font-mono">$<?php echo number_format($total, 2); ?></span>
+                        </div>
+                    </div>
+
+                    <a href="checkout.php" class="block w-full text-center bg-cyan-500 text-black font-black py-4 rounded-2xl hover:bg-cyan-400 transition mt-8 shadow-lg shadow-cyan-500/20 active:scale-[0.98]">
+                        Proceed to Checkout
+                    </a>
+                    
+                    <p class="text-[10px] text-white/30 text-center mt-4 uppercase tracking-widest font-bold">Secure Checkout Powered by Zeoraz</p>
+                </div>
+
+                <a href="index.php" class="block w-full text-center py-4 text-white/40 hover:text-white transition font-bold text-sm">
                     Continue Shopping
                 </a>
-                
-                <div class="flex items-center gap-12">
-                    <div class="text-right">
-                        <p class="text-white/40 text-sm italic">Grand Total</p>
-                        <p class="text-4xl font-black text-cyan-400">$<?php echo number_format($total, 2); ?></p>
-                    </div>
-                    <a href="checkout.php" class="bg-cyan-500 text-black px-12 py-4 rounded-full font-black text-lg hover:bg-cyan-400 hover:scale-105 transition shadow-lg shadow-cyan-500/20 active:scale-95">
-                        Checkout Now
-                    </a>
-                </div>
             </div>
         </div>
     <?php endif; ?>
 </div>
+
+<script>
+async function updateQty(id, delta) {
+    const qtyEl = document.getElementById('qty-' + id);
+    let newQty = parseInt(qtyEl.innerText) + delta;
+    if (newQty < 1) return;
+
+    const formData = new FormData();
+    formData.append('action', 'update');
+    formData.append('product_id', id);
+    formData.append('quantity', newQty);
+
+    try {
+        const res = await fetch('cart_handler.php', { method: 'POST', body: formData });
+        const data = await res.json();
+        if (data.success) {
+            location.reload(); // Simple way to refresh totals
+        }
+    } catch (e) { console.error(e); }
+}
+
+async function removeItem(id) {
+    if(!confirm('Remove this item?')) return;
+    
+    const formData = new FormData();
+    formData.append('action', 'remove');
+    formData.append('product_id', id);
+
+    try {
+        const res = await fetch('cart_handler.php', { method: 'POST', body: formData });
+        const data = await res.json();
+        if (data.success) {
+            location.reload();
+        }
+    } catch (e) { console.error(e); }
+}
+</script>
 
 <?php require_once 'includes/footer.php'; ?>
