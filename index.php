@@ -28,7 +28,7 @@ try {
     <div class="relative text-center space-y-8 max-w-4xl mx-auto px-6">
         <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-cyan-500/10 border border-cyan-500/20 text-cyan-400 text-xs font-black uppercase tracking-widest animate-pulse">
             <span class="w-2 h-2 bg-cyan-400 rounded-full"></span>
-            Next-Gen Commerce is Here
+            Next Gen Commerce is Here
         </div>
         <h1 class="text-7xl md:text-8xl font-black bg-gradient-to-b from-white to-white/40 bg-clip-text text-transparent tracking-tighter leading-tight">
             Everything you need,<br><span class="text-cyan-400 italic">Simplified.</span>
