@@ -63,7 +63,6 @@ require_once '../includes/header.php';
         <h3 class="text-3xl font-black text-emerald-400"><?php echo $stats['users']; ?></h3>
     </div>
 </div>
-
 <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
     <!-- Main Content Area -->
     <div class="lg:col-span-2 space-y-8">
