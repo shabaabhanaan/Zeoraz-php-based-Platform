@@ -1,14 +1,14 @@
 <?php
 // cart_add.php
-require_once 'includes/db.php';
-require_once 'includes/utils.php';
+require_once '../core/db.php';
+require_once '../core/utils.php';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $productId = $_POST['product_id'] ?? '';
     $quantity = (int)($_POST['quantity'] ?? 1);
 
     if (!$productId) {
-        redirect('index.php');
+        redirect(BASE_URL . 'index.php');
     }
 
     // Initialize cart if not exists
@@ -23,8 +23,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $_SESSION['cart'][$productId] = $quantity;
     }
 
-    redirect('cart.php');
+    redirect(BASE_URL . 'pages/cart.php');
 } else {
-    redirect('index.php');
+    redirect(BASE_URL . 'index.php');
 }
 ?>

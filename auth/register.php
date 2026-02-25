@@ -1,9 +1,9 @@
 <?php
-require_once '../includes/db.php';
-require_once '../includes/utils.php';
+require_once __DIR__ . '/../core/db.php';
+require_once __DIR__ . '/../core/utils.php';
 
 if (is_logged_in()) {
-    redirect('../index.php');
+    redirect(BASE_URL . 'index.php');
 }
 
 $error = '';
@@ -29,11 +29,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $stmt = $pdo->prepare("INSERT INTO users (id, name, email, password, role) VALUES (?, ?, ?, ?, ?)");
                 $stmt->execute([$id, $name, $email, $hashedPassword, $role]);
                 
-                $_SESSION['user_id'] = $id;
-                $_SESSION['user_role'] = $role;
                 $_SESSION['user_name'] = $name;
+
+                // Send Welcome Email
+                $subject = "Welcome to Zeoraz!";
+                $body = "<h2>Hello, $name!</h2>
+                         <p>Welcome to Zeoraz E-commerce Platform. Your account has been successfully created.</p>
+                         <p>You can now start shopping or list your products for sale.</p>
+                         <br>
+                         <p>Best regards,<br>The Zeoraz Team</p>";
+                sendMail($email, $subject, $body);
                 
-                redirect('../index.php');
+                redirect(BASE_URL . 'index.php');
             }
         } catch (PDOException $e) {
             $error = 'Registration failed: ' . $e->getMessage();

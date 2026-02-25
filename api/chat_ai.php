@@ -1,5 +1,5 @@
-<?php
-require_once 'includes/db.php';
+require_once '../core/config.php';
+require_once '../core/db.php';
 
 $apiKey = getenv('OPENROUTER_API_KEY');
 
@@ -10,6 +10,7 @@ if (!$userMessage) {
     echo json_encode(["reply" => "Message is empty"]);
     exit;
 }
+
 
 $ch = curl_init();
 

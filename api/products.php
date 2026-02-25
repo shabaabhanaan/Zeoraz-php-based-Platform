@@ -1,7 +1,7 @@
 <?php
 // api/products.php
-require_once '../includes/db.php';
-require_once '../includes/utils.php';
+require_once '../core/db.php';
+require_once '../core/utils.php';
 
 header('Content-Type: application/json');
 

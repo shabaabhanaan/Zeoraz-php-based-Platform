@@ -6,9 +6,9 @@
             <p class="text-white/50 mt-2">The future of multi-vendor digital commerce.</p>
         </div>
         <div class="flex gap-8 text-white/50">
-            <a href="#" class="hover:text-white transition">About</a>
-            <a href="#" class="hover:text-white transition">Privacy</a>
-            <a href="#" class="hover:text-white transition">Terms</a>
+            <a href="<?php echo BASE_URL; ?>pages/privacy-policy.php" class="hover:text-white transition">Privacy</a>
+            <a href="<?php echo BASE_URL; ?>pages/terms.php" class="hover:text-white transition">Terms</a>
+            <a href="<?php echo BASE_URL; ?>pages/return-policy.php" class="hover:text-white transition">Returns</a>
         </div>
         <div class="text-center md:text-right text-white/50 text-sm space-y-2">
             <p>
@@ -20,7 +20,7 @@
             <p>
                 📞 
                 <a href="tel:+94771234567" class="hover:text-white transition">
-                    +94 77 123 4567
+                    +94 76 913 9719
                 </a>
             </p>
         </div>
