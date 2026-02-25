@@ -1,8 +1,8 @@
 <?php
 
-require_once '../core/db.php';
-require_once '../core/utils.php';
-require_once '../google-config.php';
+require_once __DIR__ . '/../core/db.php';
+require_once __DIR__ . '/../core/utils.php';
+require_once __DIR__ . '/../google-config.php';
 
 // Create Google login URL
 $google_login_url = $client->createAuthUrl();

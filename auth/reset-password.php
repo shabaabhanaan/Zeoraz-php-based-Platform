@@ -1,7 +1,7 @@
 <?php
 // auth/reset-password.php
-require_once '../core/db.php';
-require_once '../core/utils.php';
+require_once __DIR__ . '/../core/db.php';
+require_once __DIR__ . '/../core/utils.php';
 
 $error = '';
 $success = '';
