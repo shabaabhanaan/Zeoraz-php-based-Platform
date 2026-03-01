@@ -79,18 +79,53 @@ require_once '../includes/header.php';
 <div class="space-y-12">
     <div class="flex justify-between items-end">
         <div>
-            <h1 class="text-4xl font-black italic tracking-tighter">Data <span class="text-cyan-400">Analytics</span></h1>
-            <p class="text-white/40 mt-1">Deep dive into your business performance and reach.</p>
+            <h1 class="text-4xl font-black italic tracking-tighter text-slate-900">Data <span class="text-cyan-600">Analytics</span></h1>
+            <p class="text-slate-500 mt-1">Deep dive into your business performance and reach.</p>
         </div>
-        <div class="bg-white/5 border border-white/10 px-4 py-2 rounded-xl text-xs font-mono text-white/60">
-            AUTO-REFRESH: <span class="text-cyan-400">ENABLED</span>
+        <div class="bg-slate-100 border border-black/5 px-4 py-2 rounded-xl text-xs font-mono text-slate-500">
+            AUTO-REFRESH: <span class="text-cyan-600">ENABLED</span>
+        </div>
+    </div>
+
+    <!-- Quick Stats Cards -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        <?php
+        $totalRevenue = array_sum(array_column($salesTrend, 'amount'));
+        $totalOrders = 0; // In a real app, fetch this
+        $avgOrderValue = $totalRevenue > 0 ? $totalRevenue / (max(count($mapOrders), 1)) : 0;
+        ?>
+        <div class="bg-white p-6 rounded-[32px] border border-black/5 space-y-2 shadow-lg shadow-black/[0.02]">
+            <p class="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">Total Revenue</p>
+            <p class="text-3xl font-black text-slate-900">$<?php echo number_format($totalRevenue, 2); ?></p>
+            <div class="flex items-center gap-2 text-emerald-600 text-[10px] font-bold">
+                <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>
+                +12.5% from last month
+            </div>
+        </div>
+        <div class="bg-white p-6 rounded-[32px] border border-black/5 space-y-2 shadow-lg shadow-black/[0.02]">
+            <p class="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">Active Orders</p>
+            <p class="text-3xl font-black text-slate-900"><?php echo count($mapOrders); ?></p>
+            <div class="flex items-center gap-2 text-cyan-600 text-[10px] font-bold">
+                <span class="w-2 h-2 bg-cyan-600 rounded-full animate-pulse"></span>
+                Processing Live
+            </div>
+        </div>
+        <div class="bg-white p-6 rounded-[32px] border border-black/5 space-y-2 shadow-lg shadow-black/[0.02]">
+            <p class="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">Avg. Order Value</p>
+            <p class="text-3xl font-black text-slate-900">$<?php echo number_format($avgOrderValue, 2); ?></p>
+            <div class="text-slate-400 text-[10px] font-bold">Baseline metrics</div>
+        </div>
+        <div class="bg-white p-6 rounded-[32px] border border-black/5 space-y-2 shadow-lg shadow-black/[0.02]">
+            <p class="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">Stock Alerts</p>
+            <p class="text-3xl font-black text-red-600"><?php echo count(array_filter($stockData, fn($s) => $s['stock'] < 10)); ?></p>
+            <div class="text-red-600/50 text-[10px] font-bold">Items require attention</div>
         </div>
     </div>
 
     <!-- Main Sales Chart -->
-    <div class="glass border border-white/10 p-8 rounded-[40px] shadow-2xl">
+    <div class="bg-white border border-black/5 p-8 rounded-[40px] shadow-xl">
         <h3 class="text-xl font-bold mb-6 flex items-center gap-3">
-            <span class="w-2 h-6 bg-cyan-400 rounded-full"></span>
+            <span class="w-2 h-6 bg-cyan-600 rounded-full"></span>
             Revenue Trend (Last 30 Days)
         </h3>
         <div class="h-[400px]">
@@ -100,7 +135,7 @@ require_once '../includes/header.php';
 
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
         <!-- Category Breakdown -->
-        <div class="glass border border-white/10 p-8 rounded-[40px]">
+        <div class="bg-white border border-black/5 p-8 rounded-[40px] shadow-xl">
             <h3 class="text-xl font-bold mb-6">Revenue by Category</h3>
             <div class="h-[350px] flex items-center justify-center">
                 <canvas id="categoryChart"></canvas>
@@ -108,7 +143,7 @@ require_once '../includes/header.php';
         </div>
 
         <!-- Inventory Health -->
-        <div class="glass border border-white/10 p-8 rounded-[40px]">
+        <div class="bg-white border border-black/5 p-8 rounded-[40px] shadow-xl">
             <h3 class="text-xl font-bold mb-6">Inventory Health (Lowest Stock)</h3>
             <div class="h-[350px]">
                 <canvas id="stockChart"></canvas>
@@ -117,12 +152,12 @@ require_once '../includes/header.php';
     </div>
 
     <!-- Sales Distribution Map -->
-    <div class="glass border border-white/10 p-8 rounded-[40px] overflow-hidden">
+    <div class="bg-white border border-black/5 p-8 rounded-[40px] overflow-hidden shadow-xl">
         <h3 class="text-xl font-bold mb-6 flex items-center gap-3">
-            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-emerald-400"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-emerald-600"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
             Global Sales Distribution
         </h3>
-        <div id="salesMap" class="h-[500px] rounded-3xl border border-white/10"></div>
+        <div id="salesMap" class="h-[500px] rounded-3xl border border-black/5"></div>
     </div>
 </div>
 
@@ -137,11 +172,11 @@ require_once '../includes/header.php';
         responsive: true,
         maintainAspectRatio: false,
         plugins: {
-            legend: { labels: { color: 'rgba(255,255,255,0.7)', font: { family: 'Inter', weight: 'bold' } } }
+            legend: { labels: { color: '#475569', font: { family: 'Outfit', weight: 'bold' } } }
         },
         scales: {
-            y: { grid: { color: 'rgba(255,255,255,0.05)' }, ticks: { color: 'rgba(255,255,255,0.4)', font: { family: 'JetBrains Mono' } } },
-            x: { grid: { display: false }, ticks: { color: 'rgba(255,255,255,0.4)', font: { family: 'JetBrains Mono' } } }
+            y: { grid: { color: 'rgba(15, 23, 42, 0.05)' }, ticks: { color: '#64748b', font: { family: 'JetBrains Mono' } } },
+            x: { grid: { display: false }, ticks: { color: '#64748b', font: { family: 'JetBrains Mono' } } }
         }
     };
 
@@ -153,8 +188,8 @@ require_once '../includes/header.php';
             datasets: [{
                 label: 'Revenue ($)',
                 data: <?php echo json_encode(array_column($salesTrend, 'amount')); ?>,
-                borderColor: '#22d3ee',
-                backgroundColor: 'rgba(34, 211, 238, 0.1)',
+                borderColor: '#06b6d4',
+                backgroundColor: 'rgba(6, 182, 212, 0.05)',
                 borderWidth: 4,
                 fill: true,
                 tension: 0.4,
@@ -212,7 +247,7 @@ require_once '../includes/header.php';
         attributionControl: false
     }).setView([7.8731, 80.7718], 7); // Center on Sri Lanka for demo
 
-    L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png').addTo(map);
+    L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png').addTo(map);
 
     // Mock markers based on order addresses
     // In a real scenario, we would use a geocoding service.

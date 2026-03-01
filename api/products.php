@@ -9,7 +9,27 @@ $method = $_SERVER['REQUEST_METHOD'];
 
 if ($method === 'GET') {
     try {
-        $stmt = $pdo->query("SELECT * FROM products WHERE status = 'ACTIVE' ORDER BY createdAt DESC");
+        $category = $_GET['category'] ?? '';
+        $query = $_GET['q'] ?? '';
+        
+        $sql = "SELECT * FROM products WHERE status = 'ACTIVE'";
+        $params = [];
+
+        if (!empty($category)) {
+            $sql .= " AND category = ?";
+            $params[] = $category;
+        }
+
+        if (!empty($query)) {
+            $sql .= " AND (name LIKE ? OR description LIKE ?)";
+            $params[] = "%$query%";
+            $params[] = "%$query%";
+        }
+
+        $sql .= " ORDER BY createdAt DESC";
+        
+        $stmt = $pdo->prepare($sql);
+        $stmt->execute($params);
         $products = $stmt->fetchAll();
         echo json_encode(['success' => true, 'data' => $products]);
     } catch (PDOException $e) {
