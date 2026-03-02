@@ -1,0 +1,29 @@
+# Zeoraz | Premium Marketplace htaccess
+Options -Indexes
+
+# Redirect to correct domain
+RewriteEngine On
+RewriteCond %{HTTPS} off
+RewriteRule ^(.*)$ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
+
+# Protect sensitive files
+<Files ".env">
+    Order deny,allow
+    Deny from all
+</Files>
+<Files "composer.*">
+    Order deny,allow
+    Deny from all
+</Files>
+<Files "database.sql">
+    Order deny,allow
+    Deny from all
+</Files>
+
+# Hiding .php extension (Optional but Recommended for Aesthetics)
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteCond %{REQUEST_FILENAME}\.php -f
+RewriteRule ^(.*)$ $1.php [NC,L]
+
+# Error handling
+ErrorDocument 404 /index.php?error=404

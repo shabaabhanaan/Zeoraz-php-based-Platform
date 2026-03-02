@@ -2,11 +2,11 @@
 // includes/db.php
 require_once __DIR__ . '/config.php';
 
-$host = '127.0.0.1';
-$dbname = 'multi_vendor_market';
-$user = 'root';
-$pass = '1234';
-$port = '3307';
+$host = getenv('DB_HOST') ?: '127.0.0.1';
+$dbname = getenv('DB_NAME') ?: 'multi_vendor_market';
+$user = getenv('DB_USER') ?: 'root';
+$pass = getenv('DB_PASS') ?: '1234';
+$port = getenv('DB_PORT') ?: '3307';
 
 try {
     $dsn = "mysql:host=$host;port=$port;dbname=$dbname;charset=utf8mb4";
